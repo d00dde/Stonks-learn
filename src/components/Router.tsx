@@ -15,6 +15,7 @@ export function Router() {
       {Object.entries(pages).map(([key, { to, component: Component }]) => (
         <Route key={key} path={to} element={<Component />} />
       ))}
+      <Route path="*" element={<MainPage />} />
     </Routes>
   );
 }

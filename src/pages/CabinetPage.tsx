@@ -3,7 +3,7 @@ import { faCoffee } from "@fortawesome/free-solid-svg-icons";
 import { useAppSelector } from "../store/hooks.ts";
 
 export function CabinetPage() {
-  const user = useAppSelector((state) => state.userData.user);
+  const user = useAppSelector((state) => state.appData.user);
   return (
     <div className="container mt-5">
       <h1 className="text-primary">Hello, {user?.name}!</h1>
