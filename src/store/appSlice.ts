@@ -13,7 +13,7 @@ type TAppData = {
 
 const initialState: TAppData = {
   user: null,
-  theme: "light",
+  theme: "dark",
 };
 
 const counterSlice = createSlice({

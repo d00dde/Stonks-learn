@@ -1,10 +1,8 @@
 import { type Dispatch, useState } from "react";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTractor } from "@fortawesome/free-solid-svg-icons";
 import { NavigationLink } from "../../elements/NavigationLink.tsx";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { setUser, type TUserData } from "../../store/appSlice.ts";
+import { setUser, type TUserData, setTheme } from "../../store/appSlice.ts";
 import "./Navbar.css";
 import { pages } from "../Router.tsx";
 import { Modal } from "../Modal/Modal.tsx";
@@ -15,12 +13,13 @@ export function Navbar() {
   const [showRegister, setShowRegister] = useState(false);
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.appData.user);
+  const theme = useAppSelector((state) => state.appData.theme);
   return (
     <>
-      <nav className="navbar navbar-expand-lg bg-body-secondary">
+      <nav className="navbar navbar-expand-lg">
         <div className="container-fluid container">
           <Link className="navbar-brand" to="/">
-            <FontAwesomeIcon icon={faTractor} className="logo"/>
+            <div className="logo"></div>
           </Link>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
                   data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -31,6 +30,15 @@ export function Navbar() {
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               {getLinks(user)}
             </ul>
+            <div className="form-check form-switch">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="switchCheckChecked"
+                onInput={() => dispatch(setTheme(theme === "dark"? "light" : "dark"))} />
+              <label className="form-check-label" htmlFor="switchCheckChecked">Theme</label>
+            </div>
             {getButtons(dispatch, user, setShowRegister)}
           </div>
         </div>

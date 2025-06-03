@@ -1,4 +1,19 @@
-body {
+.app {
     position: relative;
+    background-color: var(--bg-color);
 }
 
+:root {
+    --main-color: #000099;
+    --text-light-color: antiquewhite;
+    --text-dark-color: #000033;
+    --text-hover-color: #f0d526;
+    --navbar-height: 70px;
+    --bg-color: #99ccff;
+}
+
+.app.dark {
+    --main-color: #000033;
+    --text-light-color: white;
+    --bg-color: #9933ff;
+}
