@@ -1,11 +1,9 @@
-import { MainScreen } from "../components/MainScreen/MainScreen.tsx";
-import { MainFeatures } from "../components/MainFeatures/MainFeatures.tsx";
+import { TaskScreen } from "../components/TaskScreen/TaskScreen.tsx";
 
 export function MainPage() {
   return (
     <>
-      <MainScreen />
-      <MainFeatures />
+      <TaskScreen />
     </>
   );
 }

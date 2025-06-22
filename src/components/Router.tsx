@@ -1,12 +1,10 @@
 import { Routes, Route } from "react-router-dom";
 import { MainPage } from "../pages/MainPage.tsx";
-import { AboutPage } from "../pages/AboutPage.tsx";
-import { CabinetPage } from "../pages/CabinetPage.tsx";
+import { AdminPage } from "../pages/AdminPage.tsx";
 
 export const pages = {
   HOME: { title: "Home", to: "/", component: MainPage },
-  ABOUT: { title: "About", to: "/about", component: AboutPage },
-  CABINET: { title: "Cabinet", to: "/cabinet", component: CabinetPage },
+  ADMIN: { title: "Admin", to: "/about", component: AdminPage },
 };
 
 export function Router() {

@@ -11,9 +11,3 @@
     --navbar-height: 70px;
     --bg-color: #99ccff;
 }
-
-.app.dark {
-    --main-color: #000033;
-    --text-light-color: white;
-    --bg-color: #9933ff;
-}
