@@ -1,0 +1,15 @@
+.task-screen {
+    width: 100%;
+    height: calc(100vh - var(--navbar-height));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    width: 70%;
+    height: 250px;
+    border: 1px solid black;
+    border-radius: 10%;
+}

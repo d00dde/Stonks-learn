@@ -1,28 +1,49 @@
-import { useState } from "react";
-import { CARDS_DATA } from "./data.ts";
+import { useState, useEffect } from "react";
 import { TaskCard } from "./TaskCard.tsx";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../db/firebbase.ts";
 import "./TaskScreen.css";
 
+type TWordData = {
+  title: string;
+  translate: string;
+};
+
 export function TaskScreen() {
-  const [data, setData] = useState(() => shuffleData(CARDS_DATA));
   const [currentCard, setCurrentCard] = useState(0);
+  const [words, setWords] = useState<TWordData[]>([]);
+
+  useEffect(() => {
+    const fetchWords = async () => {
+      const snapshot = await getDocs(collection(db, 'words'));
+      const data = snapshot.docs.map(doc => ({ ...doc.data() })) as TWordData[];
+      setWords(shuffleData(data));
+    };
+    fetchWords();
+  }, []);
+
   function successHandler() {
-    if (currentCard < CARDS_DATA.length - 1) {
+    if (currentCard < words.length - 1) {
       setCurrentCard(currentCard + 1);
     }
   }
   function restartHandler() {
     setCurrentCard(0);
-    setData(shuffleData(CARDS_DATA));
+    setWords(shuffleData(words));
   }
   function shuffleData<T>(data: T[]) {
     return data.map((item: T) => item).sort(() => Math.random() - 0.5);
   }
+
+  if (words.length === 0) {
+    return <div className="loading">Loading...</div>;
+  }
+
   return (
     <>
-      <div className="h3 m-2">Progress: {currentCard + 1} / {data.length}</div>
+      <div className="h3 m-2">Progress: {currentCard + 1} / {words.length}</div>
       <div className="btn btn-primary m-2" onClick={restartHandler}>Restart</div>
-      <TaskCard cardData={data[currentCard]} successHandler={successHandler} key={data[currentCard].title}/>
+      <TaskCard cardData={words[currentCard]} successHandler={successHandler} key={words[currentCard].title}/>
     </>
   );
 }
