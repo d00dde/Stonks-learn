@@ -3,6 +3,7 @@ import { TaskCard } from "./TaskCard.tsx";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../db/firebbase.ts";
 import "./TaskScreen.css";
+import completeTask from "../../sounds/complete-task.wav";
 
 type TWordData = {
   title: string;
@@ -11,6 +12,7 @@ type TWordData = {
 
 export function TaskScreen() {
   const [currentCard, setCurrentCard] = useState(0);
+  const [isCompleted, setIsCompleted] = useState(false);
   const [words, setWords] = useState<TWordData[]>([]);
 
   useEffect(() => {
@@ -24,12 +26,15 @@ export function TaskScreen() {
 
   function successHandler() {
     if (currentCard < words.length - 1) {
-      setCurrentCard(currentCard + 1);
+      return setCurrentCard(currentCard + 1);
     }
+    new Audio(completeTask).play();
+    setIsCompleted(true);
   }
   function restartHandler() {
     setCurrentCard(0);
     setWords(shuffleData(words));
+    setIsCompleted(false);
   }
   function shuffleData<T>(data: T[]) {
     return data.map((item: T) => item).sort(() => Math.random() - 0.5);
@@ -43,7 +48,10 @@ export function TaskScreen() {
     <>
       <div className="h3 m-2">Progress: {currentCard + 1} / {words.length}</div>
       <div className="btn btn-primary m-2" onClick={restartHandler}>Restart</div>
-      <TaskCard cardData={words[currentCard]} successHandler={successHandler} key={words[currentCard].title}/>
+      {
+        isCompleted ? <div className="loading">Ебать, ты умный!</div>
+          : <TaskCard cardData={words[currentCard]} successHandler={successHandler} key={words[currentCard].title}/>
+      }
     </>
   );
 }
