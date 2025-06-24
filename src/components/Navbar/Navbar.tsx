@@ -1,10 +1,13 @@
 import { Link } from "react-router-dom";
 import { NavigationLink } from "../../elements/NavigationLink.tsx";
-import "./Navbar.css";
+import { GoogleLogin } from "../GoogleAuth.tsx";
 import { pages } from "../Router.tsx";
+import { useAppSelector } from "../../store/hooks.ts";
+import "./Navbar.css";
 
 
 export function Navbar() {
+  const user = useAppSelector((state) => state.appData.user);
   return (
     <>
       <nav className="navbar navbar-expand-lg">
@@ -19,19 +22,22 @@ export function Navbar() {
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              {getLinks()}
+              {getLinks(!!user)}
             </ul>
           </div>
+          <GoogleLogin />
         </div>
       </nav>
     </>
   );
 }
 
-function getLinks() {
+function getLinks(isLogged: boolean) {
   const baseLinks = [
     <NavigationLink linkData={pages.HOME} key={0}/>,
-    <NavigationLink linkData={pages.ADMIN} key={1}/>,
   ];
+  if(isLogged) {
+    baseLinks.push(<NavigationLink linkData={pages.ADMIN} key={1}/>);
+  }
   return baseLinks;
 }

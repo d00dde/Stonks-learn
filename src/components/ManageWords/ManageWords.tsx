@@ -1,4 +1,4 @@
-import {useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -15,6 +15,7 @@ export function ManageWords() {
   const [words, setWords] = useState<TWordData[]>([]);
   const [draftTitle, setDraftTitle] = useState<string>("");
   const [draftTranslate, setDraftTranslate] = useState<string>("");
+  const [filter, setFilter] = useState<string>("");
 
   async function fetchWords () {
     const snapshot = await getDocs(collection(db, 'words'));
@@ -25,6 +26,17 @@ export function ManageWords() {
   useEffect(() => {
     fetchWords();
   }, []);
+
+  const filteredWords = useMemo(() => {
+    return words.filter(word =>
+      word.title.toLowerCase().includes(filter.toLowerCase()) ||
+      word.translate.toLowerCase().includes(filter.toLowerCase())
+    );
+  }, [words, filter]);
+
+  useEffect(() => {
+    fetchWords();
+  }, [filter]);
 
   async function addWord() {
     await addDoc(collection(db, 'words'), {
@@ -52,11 +64,18 @@ export function ManageWords() {
 
   return (
     <div className="d-flex flex-column align-items-center">
-      <ul>
-        {words.map((word) => (
-          <li key={word.title} className="d-flex w-100 m-2 justify-content-between">
+      <input
+        type="text"
+        className="form-control w-50 m-2"
+        onChange={(e) => setFilter(e.target.value)}
+        value={filter}
+        placeholder="Filter words"
+      />
+      <ul className="words-list">
+        {filteredWords.map((word) => (
+          <li key={word.title} className="d-flex w-100 p-2 m-2 justify-content-between">
             <div className="h3">{word.title} - {word.translate}</div>
-            <div className="btn btn-danger" onClick={() => deleteWord(word.id)}><FontAwesomeIcon icon={faXmark}/></div>
+            <div className="btn btn-danger h-25" onClick={() => deleteWord(word.id)}><FontAwesomeIcon icon={faXmark}/></div>
           </li>
         ))}
       </ul>

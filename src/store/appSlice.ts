@@ -1,13 +1,10 @@
+import type { User } from "firebase/auth";
 import { createSlice } from "@reduxjs/toolkit";
-
-export type TUserData = {
-  name: string,
-} | null;
 
 type TThemeData = "light" | "dark";
 
 type TAppData = {
-  user: TUserData,
+  user: User | null,
   theme: TThemeData,
 }
 
@@ -20,7 +17,7 @@ const counterSlice = createSlice({
   name: "appData",
   initialState,
   reducers: {
-    setUser: (state, action: { payload: TUserData }) => {
+    setUser: (state, action: { payload: User | null }) => {
       state.user = action.payload;
     },
     setTheme: (state, action: { payload: TThemeData }) => {

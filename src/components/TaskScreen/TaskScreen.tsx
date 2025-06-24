@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { TaskCard } from "./TaskCard.tsx";
+import { CompleteScreen } from "./CompleteScreen.tsx";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../db/firebbase.ts";
 import "./TaskScreen.css";
@@ -12,8 +13,10 @@ type TWordData = {
 
 export function TaskScreen() {
   const [currentCard, setCurrentCard] = useState(0);
+  const [score, setScore] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
   const [words, setWords] = useState<TWordData[]>([]);
+  const maxScore = words.length * 2;
 
   useEffect(() => {
     const fetchWords = async () => {
@@ -24,7 +27,8 @@ export function TaskScreen() {
     fetchWords();
   }, []);
 
-  function successHandler() {
+  function successHandler(cardScore: number) {
+    setScore(prev => prev + cardScore);
     if (currentCard < words.length - 1) {
       return setCurrentCard(currentCard + 1);
     }
@@ -47,9 +51,10 @@ export function TaskScreen() {
   return (
     <>
       <div className="h3 m-2">Progress: {currentCard + 1} / {words.length}</div>
+      <div className="h3 m-2">Score: {score} / {maxScore}</div>
       <div className="btn btn-primary m-2" onClick={restartHandler}>Restart</div>
       {
-        isCompleted ? <div className="loading">Ебать, ты умный!</div>
+        isCompleted ? <CompleteScreen score={score} maxScore={maxScore} />
           : <TaskCard cardData={words[currentCard]} successHandler={successHandler} key={words[currentCard].title}/>
       }
     </>
