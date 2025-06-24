@@ -11,7 +11,11 @@ type TWordData = {
   translate: string;
 };
 
-export function TaskScreen() {
+type TProps = {
+  collectionName: string,
+}
+
+export function TaskScreen({ collectionName }: TProps) {
   const [currentCard, setCurrentCard] = useState(0);
   const [score, setScore] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -20,7 +24,7 @@ export function TaskScreen() {
 
   useEffect(() => {
     const fetchWords = async () => {
-      const snapshot = await getDocs(collection(db, 'words'));
+      const snapshot = await getDocs(collection(db, collectionName));
       const data = snapshot.docs.map(doc => ({ ...doc.data() })) as TWordData[];
       setWords(shuffleData(data));
     };

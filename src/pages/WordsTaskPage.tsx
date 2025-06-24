@@ -1,9 +1,9 @@
 import { TaskScreen } from "../components/TaskScreen/TaskScreen.tsx";
 
-export function MainPage() {
+export function WordsTaskPage() {
   return (
     <>
-      <TaskScreen />
+      <TaskScreen collectionName="words"/>
     </>
   );
 }

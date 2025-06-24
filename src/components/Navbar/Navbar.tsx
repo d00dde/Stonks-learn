@@ -34,10 +34,12 @@ export function Navbar() {
 
 function getLinks(isLogged: boolean) {
   const baseLinks = [
-    <NavigationLink linkData={pages.HOME} key={0}/>,
+    <NavigationLink linkData={pages.WORDS} key={0}/>,
+    <NavigationLink linkData={pages.PHRASES} key={1}/>,
   ];
   if(isLogged) {
-    baseLinks.push(<NavigationLink linkData={pages.ADMIN} key={1}/>);
+    baseLinks.push(<NavigationLink linkData={pages.SET_WORDS} key={2}/>);
+    baseLinks.push(<NavigationLink linkData={pages.SET_PHRASES} key={3}/>);
   }
   return baseLinks;
 }

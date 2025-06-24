@@ -1,9 +1,9 @@
 import { ManageWords } from "../components/ManageWords/ManageWords.tsx";
 
-export function AdminPage() {
+export function SetPhrasesPage() {
   return (
     <>
-      <ManageWords />
+      <ManageWords collectionName="phrases"/>
     </>
   );
 }

@@ -18,10 +18,10 @@ const completePhrases: Record<TGrade, string> = {
 function calcGrade(result: number): TGrade {
   if (result === 100) return "A+";
   if (result >= 90) return "A";
-  if (result >= 80) return "B";
-  if (result >= 70) return "C";
-  if (result >= 60) return "D";
-  if (result >= 50) return "E";
+  if (result >= 75) return "B";
+  if (result >= 65) return "C";
+  if (result >= 50) return "D";
+  if (result >= 40) return "E";
   return "F";
 }
 

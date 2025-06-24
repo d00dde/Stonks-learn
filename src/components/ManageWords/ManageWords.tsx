@@ -11,14 +11,18 @@ type TWordData = {
   id: string;
 };
 
-export function ManageWords() {
+type TProps = {
+  collectionName: string,
+}
+
+export function ManageWords({ collectionName }: TProps) {
   const [words, setWords] = useState<TWordData[]>([]);
   const [draftTitle, setDraftTitle] = useState<string>("");
   const [draftTranslate, setDraftTranslate] = useState<string>("");
   const [filter, setFilter] = useState<string>("");
 
   async function fetchWords () {
-    const snapshot = await getDocs(collection(db, 'words'));
+    const snapshot = await getDocs(collection(db, collectionName));
     const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as TWordData[];
     setWords(data);
   }
@@ -34,12 +38,8 @@ export function ManageWords() {
     );
   }, [words, filter]);
 
-  useEffect(() => {
-    fetchWords();
-  }, [filter]);
-
   async function addWord() {
-    await addDoc(collection(db, 'words'), {
+    await addDoc(collection(db, collectionName), {
       title: draftTitle,
       translate: draftTranslate,
     });
@@ -50,7 +50,7 @@ export function ManageWords() {
 
   async function deleteWord(id: string) {
     try {
-      await deleteDoc(doc(db, 'words', id));
+      await deleteDoc(doc(db, collectionName, id));
       console.log(`Документ с ID ${id} удалён`);
     } catch (error) {
       console.error('Ошибка при удалении:', error);
