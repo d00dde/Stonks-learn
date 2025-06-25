@@ -1,41 +1,40 @@
 import { useState, useEffect } from "react";
-import { TaskCard } from "./TaskCard.tsx";
+import { VerbCard } from "./VerbCard.tsx";
 import { CompleteScreen } from "../CompleteScreen.tsx";
 import { collection, getDocs } from "firebase/firestore";
-import { useAppSelector } from "../../store/hooks.ts";
 import { db } from "../../db/firebbase.ts";
-import "./TaskScreen.css";
+import "./VerbScreen.css";
 import completeTask from "../../sounds/complete-task.wav";
 
-type TWordData = {
-  title: string;
-  translate: string;
+type TVerbData = {
+  v1: string;
+  v2: string;
+  v3: string;
 };
 
 type TProps = {
   collectionName: string,
 }
 
-export function TaskScreen({ collectionName }: TProps) {
-  const userName = useAppSelector((state) => state.appData.userName);
+export function VerbScreen({ collectionName }: TProps) {
   const [currentCard, setCurrentCard] = useState(0);
   const [score, setScore] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [words, setWords] = useState<TWordData[]>([]);
-  const maxScore = words.length * 2;
+  const [verbs, setVerbs] = useState<TVerbData[]>([]);
+  const maxScore = verbs.length * 2;
 
   useEffect(() => {
     const fetchWords = async () => {
       const snapshot = await getDocs(collection(db, collectionName));
-      const data = snapshot.docs.map(doc => ({ ...doc.data() })) as TWordData[];
-      setWords(shuffleData(data));
+      const data = snapshot.docs.map(doc => ({ ...doc.data() })) as TVerbData[];
+      setVerbs(shuffleData(data));
     };
     fetchWords();
-  }, [userName]);
+  }, []);
 
   function successHandler(cardScore: number) {
     setScore(prev => prev + cardScore);
-    if (currentCard < words.length - 1) {
+    if (currentCard < verbs.length - 1) {
       return setCurrentCard(currentCard + 1);
     }
     new Audio(completeTask).play();
@@ -43,25 +42,26 @@ export function TaskScreen({ collectionName }: TProps) {
   }
   function restartHandler() {
     setCurrentCard(0);
-    setWords(shuffleData(words));
+    setScore(0);
+    setVerbs(shuffleData(verbs));
     setIsCompleted(false);
   }
   function shuffleData<T>(data: T[]) {
     return data.map((item: T) => item).sort(() => Math.random() - 0.5);
   }
 
-  if (words.length === 0) {
+  if (verbs.length === 0) {
     return <div className="loading">Loading...</div>;
   }
 
   return (
     <>
-      <div className="h3 m-2">Progress: {currentCard + 1} / {words.length}</div>
+      <div className="h3 m-2">Progress: {currentCard + 1} / {verbs.length}</div>
       <div className="h3 m-2">Score: {score} / {maxScore}</div>
       <div className="btn btn-primary m-2" onClick={restartHandler}>Restart</div>
       {
         isCompleted ? <CompleteScreen score={score} maxScore={maxScore} />
-          : <TaskCard cardData={words[currentCard]} successHandler={successHandler} key={words[currentCard].title}/>
+          : <VerbCard cardData={verbs[currentCard]} successHandler={successHandler} key={verbs[currentCard].v1}/>
       }
     </>
   );

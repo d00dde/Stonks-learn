@@ -3,11 +3,14 @@ import { NavigationLink } from "../../elements/NavigationLink.tsx";
 import { GoogleLogin } from "../GoogleAuth.tsx";
 import { pages } from "../Router.tsx";
 import { useAppSelector } from "../../store/hooks.ts";
+import { useDispatch } from "react-redux";
+import { setUserName } from "../../store/appSlice.ts";
 import "./Navbar.css";
 
 
 export function Navbar() {
-  const user = useAppSelector((state) => state.appData.user);
+  const { user, userName } = useAppSelector((state) => state.appData);
+  const dispatch = useDispatch();
   return (
     <>
       <nav className="navbar navbar-expand-lg">
@@ -25,7 +28,17 @@ export function Navbar() {
               {getLinks(!!user)}
             </ul>
           </div>
-          <GoogleLogin />
+          <div className="dropdown">
+            <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+              {userName}
+            </button>
+            <ul className="dropdown-menu bg-success">
+              <li><a className="dropdown-item" href="#" onClick={() => dispatch(setUserName("def"))} key="def">Default</a></li>
+              <li><a className="dropdown-item" href="#" onClick={() => dispatch(setUserName("Saha"))} key="Saha">Saha</a></li>
+            </ul>
+          </div>
+          <GoogleLogin/>
         </div>
       </nav>
     </>
@@ -36,10 +49,12 @@ function getLinks(isLogged: boolean) {
   const baseLinks = [
     <NavigationLink linkData={pages.WORDS} key={0}/>,
     <NavigationLink linkData={pages.PHRASES} key={1}/>,
+    <NavigationLink linkData={pages.VERBS} key={2}/>,
   ];
-  if(isLogged) {
-    baseLinks.push(<NavigationLink linkData={pages.SET_WORDS} key={2}/>);
-    baseLinks.push(<NavigationLink linkData={pages.SET_PHRASES} key={3}/>);
+  if (isLogged) {
+    baseLinks.push(<NavigationLink linkData={pages.SET_WORDS} key={3}/>);
+    baseLinks.push(<NavigationLink linkData={pages.SET_PHRASES} key={4}/>);
+    baseLinks.push(<NavigationLink linkData={pages.SET_VERBS} key={5}/>);
   }
   return baseLinks;
 }

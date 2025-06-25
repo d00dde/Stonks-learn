@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { useAppSelector } from "../../store/hooks.ts";
 import { db } from "../../db/firebbase.ts";
 import "./ManageWords.css";
 
@@ -16,6 +17,7 @@ type TProps = {
 }
 
 export function ManageWords({ collectionName }: TProps) {
+  const userName = useAppSelector((state) => state.appData.userName);
   const [words, setWords] = useState<TWordData[]>([]);
   const [draftTitle, setDraftTitle] = useState<string>("");
   const [draftTranslate, setDraftTranslate] = useState<string>("");
@@ -29,7 +31,7 @@ export function ManageWords({ collectionName }: TProps) {
 
   useEffect(() => {
     fetchWords();
-  }, []);
+  }, [userName]);
 
   const filteredWords = useMemo(() => {
     return words.filter(word =>
