@@ -6,6 +6,7 @@ import { db } from "../../db/firebbase.ts";
 import "./ManageVerbs.css";
 
 type TVerbData = {
+  translate: string,
   v1: string;
   v2: string;
   v3: string;
@@ -18,6 +19,7 @@ type TProps = {
 
 export function ManageVerbs({ collectionName }: TProps) {
   const [verbs, setVerbs] = useState<TVerbData[]>([]);
+  const [draftTranslate, setDraftTranslate] = useState<string>("");
   const [draftV1, setDraftV1] = useState<string>("");
   const [draftV2, setDraftV2] = useState<string>("");
   const [draftV3, setDraftV3] = useState<string>("");
@@ -35,6 +37,7 @@ export function ManageVerbs({ collectionName }: TProps) {
 
   const filteredVerbs = useMemo(() => {
     return verbs.filter(verb =>
+      verb.translate.toLowerCase().includes(filter.toLowerCase()) ||
       verb.v1.toLowerCase().includes(filter.toLowerCase()) ||
       verb.v2.toLowerCase().includes(filter.toLowerCase()) ||
       verb.v3.toLowerCase().includes(filter.toLowerCase())
@@ -43,10 +46,12 @@ export function ManageVerbs({ collectionName }: TProps) {
 
   async function addVerb() {
     await addDoc(collection(db, collectionName), {
+      translate: draftTranslate,
       v1: draftV1,
       v2: draftV2,
       v3: draftV3,
     });
+    setDraftTranslate("");
     setDraftV1("");
     setDraftV2("");
     setDraftV3("");
@@ -74,17 +79,25 @@ export function ManageVerbs({ collectionName }: TProps) {
         className="form-control w-50 m-2"
         onChange={(e) => setFilter(e.target.value)}
         value={filter}
-        placeholder="Filter words"
+        placeholder="Filter verbs"
       />
-      <ul className="words-list">
+      <ul className="verbs-list">
         {filteredVerbs.map((verb) => (
-          <li key={verb.v1} className="d-flex w-100 p-2 m-2 justify-content-between">
-            <div className="h3">{verb.v1} - {verb.v2} - {verb.v3}</div>
+          <li key={verb.v1} className="d-flex w-100 p-2 m-2 justify-content-between align-items-center">
+            <div className="h3 text-primary w-25">{verb.translate}:</div>
+            <div className="h3 text-success ">{verb.v1} - {verb.v2} - {verb.v3}</div>
             <div className="btn btn-danger h-25" onClick={() => deleteVerb(verb.id)}><FontAwesomeIcon icon={faXmark}/></div>
           </li>
         ))}
       </ul>
       <div className="d-flex flex-column mt-2 w-50">
+        <input
+          type="text"
+          className="form-control m-2"
+          onChange={(e) => setDraftTranslate(e.target.value)}
+          value={draftTranslate}
+          placeholder="Enter translate of verb"
+        />
         <input
           type="text"
           className="form-control m-2"

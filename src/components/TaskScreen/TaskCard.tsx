@@ -24,7 +24,7 @@ export function TaskCard({ cardData, successHandler }: TProps) {
       compare = answer.trim().toLowerCase() === cardData.translate.trim().toLowerCase();
     }
     else {
-      compare = answer.trim().toLowerCase().includes(` ${cardData.translate.trim().toLowerCase()} `);
+      compare = new RegExp(`(?:^|\\s)${cardData.translate.trim().toLowerCase()}(?:\\s|$)`).test(answer.trim().toLowerCase());
     }
     if (compare) {
       setStatus("success");
