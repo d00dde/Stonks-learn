@@ -1,37 +1,35 @@
 import { useState, useEffect } from "react";
-import { TaskCard } from "./TaskCard.tsx";
-import { CompleteScreen } from "../CompleteScreen.tsx";
 import { collection, getDocs } from "firebase/firestore";
+import { type NWords } from "../../types/NWords.ts";
+import { CompleteScreen } from "../CompleteScreen.tsx";
+import { TaskControl } from "../TaskControl.tsx";
+import { TaskCard } from "./TaskCard.tsx";
+import { Spinner } from "../../elements/Spinner.tsx";
 import { useAppSelector } from "../../store/hooks.ts";
 import { db } from "../../db/firebbase.ts";
 import "./TaskScreen.css";
 import completeTask from "../../sounds/complete-task.wav";
-
-type TWordData = {
-  title: string;
-  translate: string;
-};
 
 type TProps = {
   collectionName: string,
 }
 
 export function TaskScreen({ collectionName }: TProps) {
+  const factor = 2; // Each verb has 3 forms to answer
   const userName = useAppSelector((state) => state.appData.userName);
   const [currentCard, setCurrentCard] = useState(0);
   const [score, setScore] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [words, setWords] = useState<TWordData[]>([]);
-  const maxScore = words.length * 2;
+  const [words, setWords] = useState<NWords.TWordData[]>([]);
 
   useEffect(() => {
     const fetchWords = async () => {
       const snapshot = await getDocs(collection(db, collectionName));
-      const data = snapshot.docs.map(doc => ({ ...doc.data() })) as TWordData[];
+      const data = snapshot.docs.map(doc => ({ ...doc.data() })) as NWords.TWordData[];
       setWords(shuffleData(data));
     };
     fetchWords();
-  }, [userName]);
+  }, [collectionName, userName]);
 
   function successHandler(cardScore: number) {
     setScore(prev => prev + cardScore);
@@ -51,18 +49,16 @@ export function TaskScreen({ collectionName }: TProps) {
   }
 
   if (words.length === 0) {
-    return <div className="loading">Loading...</div>;
+    return <Spinner />;
   }
 
   return (
-    <>
-      <div className="h3 m-2">Progress: {currentCard + 1} / {words.length}</div>
-      <div className="h3 m-2">Score: {score} / {maxScore}</div>
-      <div className="btn btn-primary m-2" onClick={restartHandler}>Restart</div>
+    <div className="container-fluid container align-items-end">
+      <TaskControl score={score} factor={factor} currentCard={currentCard} cardCount={words.length} restartHandler={restartHandler}/>
       {
-        isCompleted ? <CompleteScreen score={score} maxScore={maxScore} />
+        isCompleted ? <CompleteScreen score={score} maxScore={words.length * factor} />
           : <TaskCard cardData={words[currentCard]} successHandler={successHandler} key={words[currentCard].title}/>
       }
-    </>
+    </div>
   );
 }

@@ -9,6 +9,14 @@
 .navbar {
     background-color: var(--main-color);
 }
+.navbar-brand {
+    flex-grow: 1;
+}
+.nav-links {
+    flex-grow: 5 !important;
+}
+
+
 .navbar a {
     color: var(--text-light-color);
 }

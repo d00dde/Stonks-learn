@@ -14,30 +14,31 @@ export function Navbar() {
   return (
     <>
       <nav className="navbar navbar-expand-lg">
-        <div className="container-fluid container">
+        <div className="container-fluid container d-flex ms-auto ">
           <Link className="navbar-brand" to="/">
             <div className="logo"></div>
           </Link>
+          <div className="collapse navbar-collapse nav-links" id="navbarSupportedContent">
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+              {getLinks(!!user)}
+            </ul>
+            <div className="dropdown">
+              <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                      aria-expanded="false">
+                {userName}
+              </button>
+              <ul className="dropdown-menu bg-success">
+                <li><a className="dropdown-item" href="#" onClick={() => dispatch(setUserName("def"))} key="def">Default</a></li>
+                <li><a className="dropdown-item" href="#" onClick={() => dispatch(setUserName("Saha"))} key="Saha">Saha</a></li>
+              </ul>
+            </div>
+          </div>
+
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
                   data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                   aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              {getLinks(!!user)}
-            </ul>
-          </div>
-          <div className="dropdown">
-            <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                    aria-expanded="false">
-              {userName}
-            </button>
-            <ul className="dropdown-menu bg-success">
-              <li><a className="dropdown-item" href="#" onClick={() => dispatch(setUserName("def"))} key="def">Default</a></li>
-              <li><a className="dropdown-item" href="#" onClick={() => dispatch(setUserName("Saha"))} key="Saha">Saha</a></li>
-            </ul>
-          </div>
           <GoogleLogin/>
         </div>
       </nav>

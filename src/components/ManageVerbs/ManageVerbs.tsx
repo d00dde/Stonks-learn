@@ -1,39 +1,33 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { type NVerbs } from "../../types/NVerbs.ts";
+import { Spinner } from "../../elements/Spinner.tsx";
 import { db } from "../../db/firebbase.ts";
 import "./ManageVerbs.css";
-
-type TVerbData = {
-  translate: string,
-  v1: string;
-  v2: string;
-  v3: string;
-  id: string;
-};
 
 type TProps = {
   collectionName: string,
 }
 
 export function ManageVerbs({ collectionName }: TProps) {
-  const [verbs, setVerbs] = useState<TVerbData[]>([]);
+  const [verbs, setVerbs] = useState<NVerbs.TVerbDbData[]>([]);
   const [draftTranslate, setDraftTranslate] = useState<string>("");
   const [draftV1, setDraftV1] = useState<string>("");
   const [draftV2, setDraftV2] = useState<string>("");
   const [draftV3, setDraftV3] = useState<string>("");
   const [filter, setFilter] = useState<string>("");
 
-  async function fetchVerbs () {
+  const fetchVerbs = useCallback(async () => {
     const snapshot = await getDocs(collection(db, collectionName));
-    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as TVerbData[];
+    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as NVerbs.TVerbDbData[];
     setVerbs(data);
-  }
+  }, [collectionName]);
 
   useEffect(() => {
     fetchVerbs();
-  }, []);
+  }, [fetchVerbs]);
 
   const filteredVerbs = useMemo(() => {
     return verbs.filter(verb =>
@@ -69,7 +63,7 @@ export function ManageVerbs({ collectionName }: TProps) {
   }
 
   if (verbs.length === 0) {
-    return <div className="loading">Loading...</div>;
+    return <Spinner />;
   }
 
   return (
@@ -83,7 +77,7 @@ export function ManageVerbs({ collectionName }: TProps) {
       />
       <ul className="verbs-list">
         {filteredVerbs.map((verb) => (
-          <li key={verb.v1} className="d-flex w-100 p-2 m-2 justify-content-between align-items-center">
+          <li key={verb.v1} className="d-flex w-90 p-2 m-2 justify-content-between align-items-center">
             <div className="h3 text-primary w-25">{verb.translate}:</div>
             <div className="h3 text-success ">{verb.v1} - {verb.v2} - {verb.v3}</div>
             <div className="btn btn-danger h-25" onClick={() => deleteVerb(verb.id)}><FontAwesomeIcon icon={faXmark}/></div>

@@ -1,6 +1,5 @@
 .app {
-    position: relative;
-    background-color: var(--bg-color);
+    min-height: 90vh;
 }
 
 :root {

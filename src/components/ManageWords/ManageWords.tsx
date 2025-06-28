@@ -1,16 +1,12 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { type NWords } from "../../types/NWords.ts";
+import { Spinner } from "../../elements/Spinner.tsx";
 import { useAppSelector } from "../../store/hooks.ts";
 import { db } from "../../db/firebbase.ts";
 import "./ManageWords.css";
-
-type TWordData = {
-  title: string;
-  translate: string;
-  id: string;
-};
 
 type TProps = {
   collectionName: string,
@@ -18,20 +14,20 @@ type TProps = {
 
 export function ManageWords({ collectionName }: TProps) {
   const userName = useAppSelector((state) => state.appData.userName);
-  const [words, setWords] = useState<TWordData[]>([]);
+  const [words, setWords] = useState<NWords.TWordDbData[]>([]);
   const [draftTitle, setDraftTitle] = useState<string>("");
   const [draftTranslate, setDraftTranslate] = useState<string>("");
   const [filter, setFilter] = useState<string>("");
 
-  async function fetchWords () {
+  const fetchWords = useCallback(async () => {
     const snapshot = await getDocs(collection(db, collectionName));
-    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as TWordData[];
+    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as NWords.TWordDbData[];
     setWords(data);
-  }
+  }, [collectionName]);
 
   useEffect(() => {
     fetchWords();
-  }, [userName]);
+  }, [fetchWords, userName]);
 
   const filteredWords = useMemo(() => {
     return words.filter(word =>
@@ -61,7 +57,7 @@ export function ManageWords({ collectionName }: TProps) {
   }
 
   if (words.length === 0) {
-    return <div className="loading">Loading...</div>;
+    return <Spinner />;
   }
 
   return (
@@ -75,8 +71,9 @@ export function ManageWords({ collectionName }: TProps) {
       />
       <ul className="words-list">
         {filteredWords.map((word) => (
-          <li key={word.title} className="d-flex w-100 p-2 m-2 justify-content-between">
-            <div className="h3">{word.title} - {word.translate}</div>
+          <li key={word.title} className="d-flex w-90 p-2 m-2 justify-content-between align-items-center">
+            <div className="h3 text-primary w-25">{word.title}:</div>
+            <div className="h3 text-success ">{word.translate}</div>
             <div className="btn btn-danger h-25" onClick={() => deleteWord(word.id)}><FontAwesomeIcon icon={faXmark}/></div>
           </li>
         ))}

@@ -1,15 +1,15 @@
 import { useState } from "react";
+import { type NWords } from "../../types/NWords.ts";
+import { Card } from "../Card.tsx";
+import { LifeBar } from "../LifesBar.tsx";
 import { VoiceCatcher } from "../VoiceCatcher/VoiceCatcher.tsx";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faVolumeHigh } from '@fortawesome/free-solid-svg-icons';
+import { ShowStatus } from "../../elements/ShowStatus.tsx";
+import { SpeakButton } from "../../elements/SpeakButton.tsx";
 import correctAnswer from "../../sounds/correct-answer.wav";
 import wrongAnswer from "../../sounds/wrong-answer.wav";
 
 type TProps = {
-  cardData: {
-    title: string;
-    translate: string;
-  },
+  cardData: NWords.TWordData,
   successHandler: (score: number) => void;
 };
 
@@ -18,14 +18,8 @@ export function TaskCard({ cardData, successHandler }: TProps) {
   const [score, setScore] = useState(2);
   const [status, setStatus] = useState<"answer" | "success" | "fail">("answer");
 
-  function checkHandler(strict: boolean) {
-    let compare: boolean;
-    if (strict) {
-      compare = answer.trim().toLowerCase() === cardData.translate.trim().toLowerCase();
-    }
-    else {
-      compare = new RegExp(`(?:^|\\s)${cardData.translate.trim().toLowerCase()}(?:\\s|$)`).test(answer.trim().toLowerCase());
-    }
+  function checkHandler() {
+    const compare = new RegExp(`(?:^|\\s)${cardData.translate.trim().toLowerCase()}(?:\\s|$)`).test(answer.trim().toLowerCase());
     if (compare) {
       setStatus("success");
       new Audio(correctAnswer).play();
@@ -40,29 +34,19 @@ export function TaskCard({ cardData, successHandler }: TProps) {
     new Audio(wrongAnswer).play();
   }
 
-  function speak() {
-    const utterance = new SpeechSynthesisUtterance(cardData.translate);
-    utterance.lang = "en";
-    window.speechSynthesis.speak(utterance);
-  }
-
-  const cardClass = status === "answer"
-    ? "" : status === "success" ? "bg-success text-white" :  "bg-danger text-white";
   return (
-    <div className="task-screen container-fluid container">
-      {score < 2 && <div>Tip: {cardData.translate.replace(/(?!^)[^\s]/g, "*")}</div>}
-      {score < 1 && <button onClick={speak} className="btn btn-success m-3"><FontAwesomeIcon icon={faVolumeHigh} /></button>}
-      <div className={`card h1 text-center text-capitalize p-4 ${cardClass}`}>
-        {cardData.title}
-      </div>
-      <div className="d-flex justify-content-around w-75">
+    <div className="container-fluid container mt-4">
+      <LifeBar score={score}/>
+      <Card text={cardData.title}/>
+      <div className="d-flex align-items-center justify-content-around w-100 mt-2">
         <VoiceCatcher setTranscript={setAnswer}/>
-        <button onClick={() => checkHandler(true)} className="btn btn-success m-3">Check</button>
-        <button onClick={() => checkHandler(false)} className="btn btn-success m-3">Check in phrase</button>
+        <input value={answer} onChange={(e) => setAnswer(e.target.value)} className="fs-3 text-center w-75 form-control m-2" />
+        <ShowStatus status={status} />
       </div>
-      <div className="d-flex align-items-center w-75 mt-2 flex-column flex-md-row">
-        <div className="h2 text-center me-auto">Answer:</div>
-        <input value={answer} onChange={(e) => setAnswer(e.target.value)} className="h2 text-center mx-auto form-control" />
+      <div className="d-flex align-items-center">
+        <button onClick={checkHandler} className="btn btn-success m-3">Check</button>
+        {score < 2 && <div>Tip: {cardData.translate.replace(/(?!^)[^\s]/g, "*")}</div>}
+        {score < 1 && <SpeakButton text={cardData.translate} />}
       </div>
     </div>
   );

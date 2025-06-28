@@ -1,18 +1,26 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMicrophone, faStop } from '@fortawesome/free-solid-svg-icons';
 
-type TProps = {
-  setTranscript: (transcript: string) => void,
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
 }
 
-export function VoiceCatcher({ setTranscript }: TProps){
+type TProps = {
+  setTranscript: (transcript: string) => void,
+  disabled?: boolean,
+}
+
+export function VoiceCatcher({ setTranscript, disabled = false }: TProps){
   const [listening, setListening] = useState(false);
   const recognitionRef = useRef(null);
   const getRecognition = () => {
     if (recognitionRef.current) return recognitionRef.current;
     const SpeechRecognition =
-      //@ts-ignore
       window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       alert('К сожалению, браузер не поддерживает Web Speech API');
@@ -76,6 +84,7 @@ export function VoiceCatcher({ setTranscript }: TProps){
   return (
     <div className="d-flex align-items-center">
       <button
+        disabled={disabled}
         onClick={toggleListen}
         className={`btn btn-outline-secondary ${
           listening ? 'text-danger' : 'text-success'

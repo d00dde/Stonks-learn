@@ -1,36 +1,34 @@
 import { useState, useEffect } from "react";
-import { VerbCard } from "./VerbCard.tsx";
-import { CompleteScreen } from "../CompleteScreen.tsx";
 import { collection, getDocs } from "firebase/firestore";
+import { type NVerbs } from "../../types/NVerbs.ts";
 import { db } from "../../db/firebbase.ts";
-import "./VerbScreen.css";
+import { Spinner } from "../../elements/Spinner.tsx";
+import { TaskControl } from "../TaskControl.tsx";
+import { CompleteScreen } from "../CompleteScreen.tsx";
+import { VerbCard } from "./VerbCard.tsx";
 import completeTask from "../../sounds/complete-task.wav";
+import "./VerbScreen.css";
 
-type TVerbData = {
-  v1: string;
-  v2: string;
-  v3: string;
-};
 
 type TProps = {
   collectionName: string,
 }
 
 export function VerbScreen({ collectionName }: TProps) {
+  const factor = 3; // Each verb has 3 forms to answer
   const [currentCard, setCurrentCard] = useState(0);
   const [score, setScore] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [verbs, setVerbs] = useState<TVerbData[]>([]);
-  const maxScore = verbs.length * 2;
+  const [verbs, setVerbs] = useState<NVerbs.TVerbData[]>([]);
 
   useEffect(() => {
     const fetchWords = async () => {
       const snapshot = await getDocs(collection(db, collectionName));
-      const data = snapshot.docs.map(doc => ({ ...doc.data() })) as TVerbData[];
+      const data = snapshot.docs.map(doc => ({ ...doc.data() })) as NVerbs.TVerbData[];
       setVerbs(shuffleData(data));
     };
     fetchWords();
-  }, []);
+  }, [collectionName]);
 
   function successHandler(cardScore: number) {
     setScore(prev => prev + cardScore);
@@ -51,18 +49,16 @@ export function VerbScreen({ collectionName }: TProps) {
   }
 
   if (verbs.length === 0) {
-    return <div className="loading">Loading...</div>;
+    return <Spinner />;
   }
 
   return (
-    <>
-      <div className="h3 m-2">Progress: {currentCard + 1} / {verbs.length}</div>
-      <div className="h3 m-2">Score: {score} / {maxScore}</div>
-      <div className="btn btn-primary m-2" onClick={restartHandler}>Restart</div>
+    <div className="container-fluid container align-items-end">
+      <TaskControl score={score} factor={factor} currentCard={currentCard} cardCount={verbs.length} restartHandler={restartHandler}/>
       {
-        isCompleted ? <CompleteScreen score={score} maxScore={maxScore} />
+        isCompleted ? <CompleteScreen score={score} maxScore={factor * verbs.length} />
           : <VerbCard cardData={verbs[currentCard]} successHandler={successHandler} key={verbs[currentCard].v1}/>
       }
-    </>
+    </div>
   );
 }
