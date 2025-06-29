@@ -21,7 +21,14 @@ export function VerbCard({ cardData, successHandler }: TProps) {
     v2: "answer",
     v3: "answer",
   });
-  const [score, setScore] = useState(3);
+
+  const [scores, setScores] = useState<TState<number>>({
+    v1: 1,
+    v2: 1,
+    v3: 1,
+  });
+
+  const score = Object.values(scores).reduce((acc, value) => acc + value, 0);
 
   function checkHandler(field: NVerbs.TVerbForms, answer: string) {
     const compare = new RegExp(`(?:^|\\s)${cardData[field].trim().toLowerCase()}(?:\\s|$)`).test(answer.trim().toLowerCase());
@@ -32,7 +39,7 @@ export function VerbCard({ cardData, successHandler }: TProps) {
       return compare;
     }
     setStatus(prev => ({ ...prev, [field]: "fail" }));
-    setScore(prev => prev > 0 ? prev - 1 : 0);
+    setScores(prev => ({ ...prev, [field]: 0 }));
     new Audio(wrongAnswer).play();
     return compare;
   }
@@ -42,13 +49,13 @@ export function VerbCard({ cardData, successHandler }: TProps) {
   }
 
   return (
-    <div className="container-fluid container mt-4">
+    <div className="container-fluid container mt-4 d-flex flex-column align-items-end">
       <LifeBar score={score}/>
       <Card text={cardData.translate}/>
-      <VerbInput verbForm="v1" checkHandler={checkHandler} status={status.v1} correct={cardData.v1} score={score} />
-      <VerbInput verbForm="v2" checkHandler={checkHandler} status={status.v2} correct={cardData.v2} score={score} />
-      <VerbInput verbForm="v3" checkHandler={checkHandler} status={status.v3} correct={cardData.v3} score={score} />
-      {checkAll() && <button onClick={() => successHandler(score)} className="btn btn-success m-3">Next &gt;&gt;</button>}
+      <VerbInput verbForm="v1" checkHandler={checkHandler} status={status.v1} correct={cardData.v1} />
+      <VerbInput verbForm="v2" checkHandler={checkHandler} status={status.v2} correct={cardData.v2} />
+      <VerbInput verbForm="v3" checkHandler={checkHandler} status={status.v3} correct={cardData.v3} />
+      {checkAll() && <div onClick={() => successHandler(score)} className="btn btn-success m-3">Next &gt;&gt;</div>}
     </div>
   );
 }

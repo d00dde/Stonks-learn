@@ -7,6 +7,7 @@ import { ShowStatus } from "../../elements/ShowStatus.tsx";
 import { SpeakButton } from "../../elements/SpeakButton.tsx";
 import correctAnswer from "../../sounds/correct-answer.wav";
 import wrongAnswer from "../../sounds/wrong-answer.wav";
+import {ShowAnswerButton} from "../../elements/ShowAnswerButton.tsx";
 
 type TProps = {
   cardData: NWords.TWordData,
@@ -43,10 +44,11 @@ export function TaskCard({ cardData, successHandler }: TProps) {
         <input value={answer} onChange={(e) => setAnswer(e.target.value)} className="fs-3 text-center w-75 form-control m-2" />
         <ShowStatus status={status} />
       </div>
-      <div className="d-flex align-items-center">
-        <button onClick={checkHandler} className="btn btn-success m-3">Check</button>
-        {score < 2 && <div>Tip: {cardData.translate.replace(/(?!^)[^\s]/g, "*")}</div>}
+      <div className="d-flex align-items-center justify-content-end">
+        {score < 1 && <ShowAnswerButton answer={cardData.translate} />}
         {score < 1 && <SpeakButton text={cardData.translate} />}
+        {score < 2 && <div>Tip: {cardData.translate.replace(/(?!^)[^\s]/g, "*")}</div>}
+        <button onClick={checkHandler} className="btn btn-success m-3">Check</button>
       </div>
     </div>
   );
