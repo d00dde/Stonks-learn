@@ -41,8 +41,9 @@ export function TaskScreen({ collectionName }: TProps) {
   }
   function restartHandler() {
     setCurrentCard(0);
-    setWords(shuffleData(words));
+    setScore(0);
     setIsCompleted(false);
+    setWords(shuffleData(words));
   }
   function shuffleData<T>(data: T[]) {
     return data.map((item: T) => item).sort(() => Math.random() - 0.5);

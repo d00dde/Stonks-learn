@@ -15,6 +15,8 @@ type TProps = {
 };
 
 export function TaskCard({ cardData, successHandler }: TProps) {
+  const [isHold, setIsHold] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
   const [answer, setAnswer] = useState("");
   const [score, setScore] = useState(2);
   const [status, setStatus] = useState<"answer" | "success" | "fail">("answer");
@@ -24,6 +26,10 @@ export function TaskCard({ cardData, successHandler }: TProps) {
     if (compare) {
       setStatus("success");
       new Audio(correctAnswer).play();
+      if (isHold) {
+        setIsComplete(true);
+        return
+      }
       setTimeout(() => {
         successHandler(score);
       }, 1000);
@@ -40,15 +46,25 @@ export function TaskCard({ cardData, successHandler }: TProps) {
       <LifeBar score={score}/>
       <Card text={cardData.title}/>
       <div className="d-flex align-items-center justify-content-around w-100 mt-2">
-        <VoiceCatcher setTranscript={setAnswer}/>
         <input value={answer} onChange={(e) => setAnswer(e.target.value)} className="fs-3 text-center w-75 form-control m-2" />
         <ShowStatus status={status} />
+        <VoiceCatcher setTranscript={setAnswer}/>
       </div>
       <div className="d-flex align-items-center justify-content-end">
-        {score < 1 && <ShowAnswerButton answer={cardData.translate} />}
-        {score < 1 && <SpeakButton text={cardData.translate} />}
-        {score < 2 && <div>Tip: {cardData.translate.replace(/(?!^)[^\s]/g, "*")}</div>}
-        <button onClick={checkHandler} className="btn btn-success m-3">Check</button>
+
+        {(score < 1 || isComplete) && <SpeakButton text={cardData.translate} />}
+        {(score < 2 || isComplete) && <div>Tip: {cardData.translate.replace(/(?!^)[^\s]/g, "*")}</div>}
+        <div>
+          <input type="checkbox" className="btn-check" id="holdCheck" autoComplete="off" onChange={() => setIsHold(prev => !prev)}/>
+          <label className="btn btn-outline-primary m-2" htmlFor="holdCheck">{ isHold ? "Unhold" : "Hold"}</label>
+        </div>
+        {isComplete ?
+          <button onClick={() => successHandler(score)} className="btn btn-success m-3">Next</button>
+          : <button onClick={checkHandler} className="btn btn-success m-3">Check</button>
+        }
+      </div>
+      <div className="d-flex align-items-center justify-content-center">
+        {(score < 1 || isComplete) && <ShowAnswerButton answer={cardData.translate} />}
       </div>
     </div>
   );

@@ -25,7 +25,6 @@ export function VerbInput({ verbForm, checkHandler, status, correct }: TProps) {
   return (
     <div className="d-flex justify-content-around w-100 flex-column flex-md-row">
       <div className="d-flex align-items-center flex-grow-1">
-          <VoiceCatcher setTranscript={(value: string) => setAnswer(value)} disabled={status === "success"}/>
           <input
             disabled={status === "success"}
             value={answer}
@@ -33,6 +32,7 @@ export function VerbInput({ verbForm, checkHandler, status, correct }: TProps) {
             className="fs-3 text-center form-control h-75 m-2"
           />
           <ShowStatus status={status} />
+          <VoiceCatcher setTranscript={(value: string) => setAnswer(value)} disabled={status === "success"}/>
         </div>
       <div className="d-flex justify-content-end">
         { (status === "success" || status === "fail") && < ShowAnswerButton answer={correct} /> }
