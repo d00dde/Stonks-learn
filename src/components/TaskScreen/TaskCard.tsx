@@ -5,9 +5,9 @@ import { LifeBar } from "../LifesBar.tsx";
 import { VoiceCatcher } from "../VoiceCatcher/VoiceCatcher.tsx";
 import { ShowStatus } from "../../elements/ShowStatus.tsx";
 import { SpeakButton } from "../../elements/SpeakButton.tsx";
+import { ShowAnswerButton } from "../../elements/ShowAnswerButton.tsx";
 import correctAnswer from "../../sounds/correct-answer.wav";
 import wrongAnswer from "../../sounds/wrong-answer.wav";
-import {ShowAnswerButton} from "../../elements/ShowAnswerButton.tsx";
 
 type TProps = {
   cardData: NWords.TWordData,

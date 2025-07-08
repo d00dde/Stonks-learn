@@ -14,37 +14,91 @@ type TProps = {
   collectionName: string,
 }
 
+type TWordData = NWords.TWordData & {
+  score: number,
+  complete: boolean,
+};
+
 export function TaskScreen({ collectionName }: TProps) {
-  const factor = 2; // Each verb has 3 forms to answer
+  const factor = 2;
   const userName = useAppSelector((state) => state.appData.userName);
   const [currentCard, setCurrentCard] = useState(0);
-  const [score, setScore] = useState(0);
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [words, setWords] = useState<NWords.TWordData[]>([]);
+  const [status, setStatus] = useState<NWords.TStatus>("mainTask");
+  const [words, setWords] = useState<TWordData[]>([]);
+  const [repeats, setRepeats] = useState<TWordData[]>([]);
 
   useEffect(() => {
     const fetchWords = async () => {
       const snapshot = await getDocs(collection(db, collectionName));
-      const data = snapshot.docs.map(doc => ({ ...doc.data() })) as NWords.TWordData[];
+      const data = snapshot.docs.map(doc => ({
+        ...doc.data(),
+        score: 0,
+        complete: false,
+      })) as TWordData[];
       setWords(shuffleData(data));
     };
     fetchWords();
   }, [collectionName, userName]);
 
   function successHandler(cardScore: number) {
-    setScore(prev => prev + cardScore);
-    if (currentCard < words.length - 1) {
-      return setCurrentCard(currentCard + 1);
+    if (cardScore > 0) {
+      if (status === "mainTask") {
+        setWords((prev) => {
+          const updatedWords = [...prev];
+          updatedWords[currentCard].score = cardScore;
+          updatedWords[currentCard].complete = true;
+          return updatedWords;
+        });
+      }
+      else {
+        setRepeats((prev) => {
+          const updatedWords = [...prev];
+          updatedWords[currentCard].complete = true;
+          return updatedWords;
+        });
+      }
     }
-    new Audio(completeTask).play();
-    setIsCompleted(true);
+    const mistakes = status === "mainTask"
+      ? words.filter(word => !word.complete).length
+      : repeats.filter(word => !word.complete).length;
+    switch (status) {
+      case "mainTask":
+        if (currentCard < words.length - 1) {
+          return setCurrentCard(currentCard + 1);
+        }
+        if (mistakes === 0) {
+          new Audio(completeTask).play();
+          return setStatus("done");
+        }
+        setCurrentCard(0);
+        setRepeats(words.filter(word => !word.complete));
+        return setStatus("repeat");
+      case "repeat":
+        if (currentCard < repeats.length - 1) {
+          return setCurrentCard(currentCard + 1);
+        }
+        if (mistakes === 0) {
+          new Audio(completeTask).play();
+          return setStatus("done");
+        }
+        setRepeats(words.filter(word => !word.complete));
+        setCurrentCard(0);
+    }
   }
+
   function restartHandler() {
     setCurrentCard(0);
-    setScore(0);
-    setIsCompleted(false);
-    setWords(shuffleData(words));
+    setStatus("mainTask");
+    setWords((prev) => {
+      prev.forEach(word => {
+        word.score = 0;
+        word.complete = false;
+      });
+      return shuffleData(prev);
+    });
+    setRepeats([]);
   }
+
   function shuffleData<T>(data: T[]) {
     return data.map((item: T) => item).sort(() => Math.random() - 0.5);
   }
@@ -53,12 +107,23 @@ export function TaskScreen({ collectionName }: TProps) {
     return <Spinner />;
   }
 
+  const score = words.reduce((acc, word) => acc + word.score, 0);
+  const displayWords = status === "repeat" ? repeats : words;
+
   return (
     <div className="container-fluid container align-items-end">
-      <TaskControl score={score} factor={factor} currentCard={currentCard} cardCount={words.length} restartHandler={restartHandler}/>
+      <TaskControl
+        score={score}
+        factor={factor}
+        currentCard={currentCard}
+        cardCount={words.length}
+        restartHandler={restartHandler}
+        status={status}
+        repeatCards={repeats.length}
+      />
       {
-        isCompleted ? <CompleteScreen score={score} maxScore={words.length * factor} />
-          : <TaskCard cardData={words[currentCard]} successHandler={successHandler} key={words[currentCard].title}/>
+        status === "done" ? <CompleteScreen score={score} maxScore={words.length * factor} />
+          : <TaskCard cardData={displayWords[currentCard]} successHandler={successHandler} key={Date.now()}/>
       }
     </div>
   );

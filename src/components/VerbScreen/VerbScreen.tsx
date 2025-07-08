@@ -54,7 +54,15 @@ export function VerbScreen({ collectionName }: TProps) {
 
   return (
     <div className="container-fluid container align-items-end">
-      <TaskControl score={score} factor={factor} currentCard={currentCard} cardCount={verbs.length} restartHandler={restartHandler}/>
+      <TaskControl
+        score={score}
+        factor={factor}
+        currentCard={currentCard}
+        cardCount={verbs.length}
+        restartHandler={restartHandler}
+        status="mainTask"
+        repeatCards={0}
+      />
       {
         isCompleted ? <CompleteScreen score={score} maxScore={factor * verbs.length} />
           : <VerbCard cardData={verbs[currentCard]} successHandler={successHandler} key={verbs[currentCard].v1}/>
