@@ -51,7 +51,9 @@ export function VerbCard({ cardData, successHandler }: TProps) {
   return (
     <div className="container-fluid container mt-4 d-flex flex-column align-items-end">
       <LifeBar score={score}/>
-      <Card text={cardData.translate}/>
+      <Card>
+        <div>{cardData.translate}</div>
+      </Card>
       <VerbInput verbForm="v1" checkHandler={checkHandler} status={status.v1} correct={cardData.v1} />
       <VerbInput verbForm="v2" checkHandler={checkHandler} status={status.v2} correct={cardData.v2} />
       <VerbInput verbForm="v3" checkHandler={checkHandler} status={status.v3} correct={cardData.v3} />

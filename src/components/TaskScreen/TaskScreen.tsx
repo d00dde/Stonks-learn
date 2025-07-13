@@ -24,6 +24,8 @@ export function TaskScreen({ collectionName }: TProps) {
   const userName = useAppSelector((state) => state.appData.userName);
   const [currentCard, setCurrentCard] = useState(0);
   const [status, setStatus] = useState<NWords.TStatus>("mainTask");
+  const [mode, setMode] = useState<NWords.TMode>("normal");
+  const [taskType, setTaskType] = useState<NWords.TTaskType>("voice");
   const [words, setWords] = useState<TWordData[]>([]);
   const [repeats, setRepeats] = useState<TWordData[]>([]);
 
@@ -120,10 +122,20 @@ export function TaskScreen({ collectionName }: TProps) {
         restartHandler={restartHandler}
         status={status}
         repeatCards={repeats.length}
+        mode={mode}
+        setMode={setMode}
+        taskType={taskType}
+        setTaskType={setTaskType}
       />
       {
         status === "done" ? <CompleteScreen score={score} maxScore={words.length * factor} />
-          : <TaskCard cardData={displayWords[currentCard]} successHandler={successHandler} key={Date.now()}/>
+          : <TaskCard
+            cardData={displayWords[currentCard]}
+            successHandler={successHandler}
+            key={Date.now()}
+            mode={mode}
+            taskType={taskType}
+          />
       }
     </div>
   );

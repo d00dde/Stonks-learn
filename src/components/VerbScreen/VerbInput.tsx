@@ -32,11 +32,11 @@ export function VerbInput({ verbForm, checkHandler, status, correct }: TProps) {
             className="fs-3 text-center form-control h-75 m-2"
           />
           <ShowStatus status={status} />
-          <VoiceCatcher setTranscript={(value: string) => setAnswer(value)} disabled={status === "success"}/>
+          <VoiceCatcher setTranscript={(value: string) => setAnswer(value)} disabled={status === "success"} lang="en"/>
         </div>
       <div className="d-flex justify-content-end">
         { (status === "success" || status === "fail") && < ShowAnswerButton answer={correct} /> }
-        { (status === "success" || status === "fail") && <SpeakButton text={correct} /> }
+        { (status === "success" || status === "fail") && <SpeakButton text={correct} lang="en" /> }
         <button onClick={check} className="btn btn-success m-3" disabled={status === "success"}>Check</button>
       </div>
     </div>

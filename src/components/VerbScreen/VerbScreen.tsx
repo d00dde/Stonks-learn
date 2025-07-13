@@ -62,6 +62,10 @@ export function VerbScreen({ collectionName }: TProps) {
         restartHandler={restartHandler}
         status="mainTask"
         repeatCards={0}
+        mode="normal"
+        setMode={() => { /* No use mode in verbs */ }}
+        setTaskType={() => { /* No use taskType in verbs */ }}
+        taskType="text"
       />
       {
         isCompleted ? <CompleteScreen score={score} maxScore={factor * verbs.length} />

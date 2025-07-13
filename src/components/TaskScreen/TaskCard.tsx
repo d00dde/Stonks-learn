@@ -12,17 +12,31 @@ import wrongAnswer from "../../sounds/wrong-answer.wav";
 type TProps = {
   cardData: NWords.TWordData,
   successHandler: (score: number) => void;
+  mode: NWords.TMode;
+  taskType: NWords.TTaskType;
 };
 
-export function TaskCard({ cardData, successHandler }: TProps) {
+export function TaskCard({ cardData, successHandler, mode, taskType }: TProps) {
   const [isHold, setIsHold] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [answer, setAnswer] = useState("");
   const [score, setScore] = useState(2);
   const [status, setStatus] = useState<"answer" | "success" | "fail">("answer");
 
+  const correct = mode === "normal" ? cardData.translate : cardData.title;
+  const question = mode === "normal" ? cardData.title : cardData.translate;
+
+  function prepareString(str: string) {
+    return str.trim().toLowerCase().replace("ё", "е").replace(/[.,()]/g, " ");
+  }
+
+  function getRegexp(text: string) {
+    console.log("check")
+    return new RegExp(`(?:^|\\s)${prepareString(text)}(?:\\s|$)`);
+  }
+
   function checkHandler() {
-    const compare = new RegExp(`(?:^|\\s)${cardData.translate.trim().toLowerCase()}(?:\\s|$)`).test(answer.trim().toLowerCase());
+    const compare = answer.length !== 0 && (getRegexp(correct).test(prepareString(answer)) || getRegexp(answer).test(prepareString(correct)));
     if (compare) {
       setStatus("success");
       new Audio(correctAnswer).play();
@@ -44,16 +58,18 @@ export function TaskCard({ cardData, successHandler }: TProps) {
   return (
     <div className="container-fluid container mt-4">
       <LifeBar score={score}/>
-      <Card text={cardData.title}/>
+      <Card>
+        {taskType === "text" ?  <div>{question}</div> : <SpeakButton text={question} lang={ mode === "reverse" ? "en" : "ru"} />}
+      </Card>
       <div className="d-flex align-items-center justify-content-around w-100 mt-2">
         <input value={answer} onChange={(e) => setAnswer(e.target.value)} className="fs-3 text-center w-75 form-control m-2" />
         <ShowStatus status={status} />
-        <VoiceCatcher setTranscript={setAnswer}/>
+        <VoiceCatcher setTranscript={setAnswer} lang={ mode === "normal" ? "en" : "ru"}/>
       </div>
       <div className="d-flex align-items-center justify-content-end">
 
-        {(score < 1 || isComplete) && <SpeakButton text={cardData.translate} />}
-        {(score < 2 || isComplete) && <div>Tip: {cardData.translate.replace(/(?!^)[^\s]/g, "*")}</div>}
+        {(score < 1 || isComplete) && <SpeakButton text={correct} lang={ mode === "normal" ? "en" : "ru"} />}
+        {(score < 2 || isComplete) && <div>Tip: {correct.replace(/(?!^)\S/g, "*")}</div>}
         <div>
           <input type="checkbox" className="btn-check" id="holdCheck" autoComplete="off" onChange={() => setIsHold(prev => !prev)}/>
           <label className="btn btn-outline-primary m-2" htmlFor="holdCheck">{ isHold ? "Unhold" : "Hold"}</label>
@@ -64,7 +80,7 @@ export function TaskCard({ cardData, successHandler }: TProps) {
         }
       </div>
       <div className="d-flex align-items-center justify-content-center">
-        {(score < 1 || isComplete) && <ShowAnswerButton answer={cardData.translate} />}
+        {(score < 1 || isComplete) && <ShowAnswerButton answer={correct} />}
       </div>
     </div>
   );

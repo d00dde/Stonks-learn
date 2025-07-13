@@ -13,9 +13,15 @@ declare global {
 type TProps = {
   setTranscript: (transcript: string) => void,
   disabled?: boolean,
+  lang: string,
 }
 
-export function VoiceCatcher({ setTranscript, disabled = false }: TProps){
+const langs = {
+  en: "en-US",
+  ru: "ru-RU",
+}
+
+export function VoiceCatcher({ setTranscript, lang, disabled = false }: TProps){
   const [listening, setListening] = useState(false);
   const recognitionRef = useRef(null);
   const getRecognition = () => {
@@ -28,7 +34,7 @@ export function VoiceCatcher({ setTranscript, disabled = false }: TProps){
     }
 
     const recog = new SpeechRecognition();
-    recog.lang = 'en';          // язык распознавания
+    recog.lang = langs[lang as keyof typeof langs] ?? "en-US"; // язык распознавания
     recog.interimResults = false;   // получать промежуточные результаты
     recog.maxAlternatives = 1;
 
