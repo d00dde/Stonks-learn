@@ -4,16 +4,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { type NWords } from "../../types/NWords.ts";
 import { Spinner } from "../../elements/Spinner.tsx";
-import { useAppSelector } from "../../store/hooks.ts";
 import { db } from "../../db/firebbase.ts";
 import "./ManageWords.css";
 
-type TProps = {
-  collectionName: string,
-}
+const collectionName = "words";
 
-export function ManageWords({ collectionName }: TProps) {
-  const userName = useAppSelector((state) => state.appData.userName);
+export function ManageWords() {
   const [words, setWords] = useState<NWords.TWordDbData[]>([]);
   const [draftTitle, setDraftTitle] = useState<string>("");
   const [draftTranslate, setDraftTranslate] = useState<string>("");
@@ -23,23 +19,23 @@ export function ManageWords({ collectionName }: TProps) {
     const snapshot = await getDocs(collection(db, collectionName));
     const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as NWords.TWordDbData[];
     setWords(data);
-  }, [collectionName]);
+  }, []);
 
   useEffect(() => {
     fetchWords();
-  }, [fetchWords, userName]);
+  }, [fetchWords]);
 
   const filteredWords = useMemo(() => {
     return words.filter(word =>
-      word.title.toLowerCase().includes(filter.toLowerCase()) ||
-      word.translate.toLowerCase().includes(filter.toLowerCase())
+      word.translation.toLowerCase().includes(filter.toLowerCase()) ||
+      word.word.toLowerCase().includes(filter.toLowerCase())
     );
   }, [words, filter]);
 
   async function addWord() {
     await addDoc(collection(db, collectionName), {
-      title: draftTitle,
-      translate: draftTranslate,
+      word: draftTitle,
+      translation: draftTranslate,
     });
     setDraftTitle("");
     setDraftTranslate("");
@@ -71,9 +67,9 @@ export function ManageWords({ collectionName }: TProps) {
       />
       <ul className="words-list">
         {filteredWords.map((word) => (
-          <li key={word.title} className="d-flex w-90 p-2 m-2 justify-content-between align-items-center">
-            <div className="h3 text-primary w-25">{word.title}:</div>
-            <div className="h3 text-success ">{word.translate}</div>
+          <li key={word.translation} className="d-flex w-90 p-2 m-2 justify-content-between align-items-center">
+            <div className="h3 text-primary w-25">{word.translation}:</div>
+            <div className="h3 text-success ">{word.word}</div>
             <div className="btn btn-danger h-25" onClick={() => deleteWord(word.id)}><FontAwesomeIcon icon={faXmark}/></div>
           </li>
         ))}
@@ -84,14 +80,14 @@ export function ManageWords({ collectionName }: TProps) {
           className="form-control m-2"
           onChange={(e) => setDraftTitle(e.target.value)}
           value={draftTitle}
-          placeholder="Enter word title"
+          placeholder="Enter english word"
         />
         <input
           type="text"
           className="form-control m-2"
           onChange={(e) => setDraftTranslate(e.target.value)}
           value={draftTranslate}
-          placeholder="Enter word translation"
+          placeholder="Enter translation"
         />
         <div className="btn btn-success m-2" onClick={addWord}>Add</div>
       </div>

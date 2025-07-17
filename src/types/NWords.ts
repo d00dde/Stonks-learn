@@ -4,10 +4,16 @@ export namespace NWords {
   export type TMode = "normal" | "reverse";
   export type TTaskType = "text" | "voice";
 
+  export type TWordStatus = "new" | "learn" | "skip" | "known";
+
   export type TWordDbData = {
     id: string;
-    title: string;
-    translate: string;
+    word: string;
+    translation: string;
+    statusA: TWordStatus;
+    statusB: TWordStatus;
+    learnedAtA: number | null;
+    learnedAtB: number | null;
   };
 
   export type TWordData = Omit<TWordDbData, "id">;

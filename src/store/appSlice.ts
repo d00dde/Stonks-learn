@@ -5,13 +5,13 @@ type TThemeData = "light" | "dark";
 
 type TAppData = {
   user: User | null,
-  userName: string,
+  table: string,
   theme: TThemeData,
 }
 
 const initialState: TAppData = {
   user: null,
-  userName: "def",
+  table: "words-v2",
   theme: "dark",
 };
 
@@ -22,8 +22,8 @@ const counterSlice = createSlice({
     setUser: (state, action: { payload: User | null }) => {
       state.user = action.payload;
     },
-    setUserName: (state, action: { payload: string }) => {
-      state.userName = action.payload;
+    setTable: (state, action: { payload: string }) => {
+      state.table = action.payload;
     },
     setTheme: (state, action: { payload: TThemeData }) => {
       state.theme = action.payload;
@@ -31,5 +31,5 @@ const counterSlice = createSlice({
   },
 });
 
-export const { setUser, setTheme, setUserName } = counterSlice.actions;
+export const { setUser, setTheme, setTable } = counterSlice.actions;
 export default counterSlice.reducer;

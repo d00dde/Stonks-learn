@@ -18,7 +18,6 @@ export function GoogleLogin() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       dispatch(setUser(user));
-      console.log("Вошли как:", user.displayName, user.email, user.uid);
     } catch (error) {
       console.error("Ошибка входа через Google:", error);
     }

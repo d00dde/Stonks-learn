@@ -44,6 +44,7 @@ export function ManageVerbs({ collectionName }: TProps) {
       v1: draftV1,
       v2: draftV2,
       v3: draftV3,
+      createdAt: Date.now(),
     });
     setDraftTranslate("");
     setDraftV1("");

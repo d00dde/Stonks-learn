@@ -31,7 +31,7 @@ export function VerbCard({ cardData, successHandler }: TProps) {
   const score = Object.values(scores).reduce((acc, value) => acc + value, 0);
 
   function checkHandler(field: NVerbs.TVerbForms, answer: string) {
-    const compare = new RegExp(`(?:^|\\s)${cardData[field].trim().toLowerCase()}(?:\\s|$)`).test(answer.trim().toLowerCase());
+    const compare = new RegExp(`(?:^|\\s)${cardData[field]!.trim().toLowerCase()}(?:\\s|$)`).test(answer.trim().toLowerCase());
 
     if (compare) {
       setStatus(prev => ({ ...prev, [field]: "success" }));

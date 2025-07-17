@@ -1,17 +1,15 @@
 import { Routes, Route } from "react-router-dom";
 import { WordsTaskPage } from "../pages/WordsTaskPage.tsx";
-import { PhrasesTaskPage } from "../pages/PhrasesTaskPage.tsx";
 import { SetWordsPage } from "../pages/SetWordsPage.tsx";
-import { SetPhrasesPage } from "../pages/SetPhrasesPage.tsx";
+import { AddWordsPage } from "../pages/AddWordsPage.tsx";
 import { SetVerbsPage } from "../pages/SetVerbsPage.tsx";
 import { VerbsTaskPage } from "../pages/VerbsTaskPage.tsx";
 
 export const pages = {
-  WORDS: { title: "Words", to: "/", component: WordsTaskPage },
-  PHRASES: { title: "Phrases", to: "/phrases", component: PhrasesTaskPage },
-  VERBS: { title: "Verbs", to: "/verbs", component: VerbsTaskPage },
+  WORDS: { title: "Learn words", to: "/", component: WordsTaskPage },
+  VERBS: { title: "Learn verbs", to: "/verbs", component: VerbsTaskPage },
   SET_WORDS: { title: "Set words", to: "/set-words", component: SetWordsPage },
-  SET_PHRASES: { title: "Set phrases", to: "/set-phrases", component: SetPhrasesPage },
+  ADD_WORDS: { title: "Add words", to: "/add-words", component: AddWordsPage },
   SET_VERBS: { title: "Set verbs", to: "/set-verbs", component: SetVerbsPage },
 };
 

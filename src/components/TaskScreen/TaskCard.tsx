@@ -22,16 +22,14 @@ export function TaskCard({ cardData, successHandler, mode, taskType }: TProps) {
   const [answer, setAnswer] = useState("");
   const [score, setScore] = useState(2);
   const [status, setStatus] = useState<"answer" | "success" | "fail">("answer");
-
-  const correct = mode === "normal" ? cardData.translate : cardData.title;
-  const question = mode === "normal" ? cardData.title : cardData.translate;
+  const correct = mode === "normal" ? cardData.word : cardData.translation;
+  const question = mode === "normal" ? cardData.translation : cardData.word;
 
   function prepareString(str: string) {
     return str.trim().toLowerCase().replace("ё", "е").replace(/[.,()]/g, " ");
   }
 
   function getRegexp(text: string) {
-    console.log("check")
     return new RegExp(`(?:^|\\s)${prepareString(text)}(?:\\s|$)`);
   }
 

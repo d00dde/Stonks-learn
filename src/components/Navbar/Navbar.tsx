@@ -4,12 +4,12 @@ import { GoogleLogin } from "../GoogleAuth.tsx";
 import { pages } from "../Router.tsx";
 import { useAppSelector } from "../../store/hooks.ts";
 import { useDispatch } from "react-redux";
-import { setUserName } from "../../store/appSlice.ts";
+import { setTable } from "../../store/appSlice.ts";
 import "./Navbar.css";
 
 
 export function Navbar() {
-  const { user, userName } = useAppSelector((state) => state.appData);
+  const { user, table } = useAppSelector((state) => state.appData);
   const dispatch = useDispatch();
   return (
     <>
@@ -25,11 +25,11 @@ export function Navbar() {
             <div className="dropdown">
               <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
                       aria-expanded="false">
-                {userName}
+                {table === "words-v2" ? "Dictionary" : "Custom"}
               </button>
               <ul className="dropdown-menu bg-success">
-                <li><a className="dropdown-item" href="#" onClick={() => dispatch(setUserName("def"))} key="def">Default</a></li>
-                <li><a className="dropdown-item" href="#" onClick={() => dispatch(setUserName("Saha"))} key="Saha">Saha</a></li>
+                <li><a className="dropdown-item" href="#" onClick={() => dispatch(setTable("words-v2"))} key="words-v2">Dictionary</a></li>
+                <li><a className="dropdown-item" href="#" onClick={() => dispatch(setTable("words"))} key="words">Custom</a></li>
               </ul>
             </div>
           </div>
@@ -49,12 +49,11 @@ export function Navbar() {
 function getLinks(isLogged: boolean) {
   const baseLinks = [
     <NavigationLink linkData={pages.WORDS} key={0}/>,
-    <NavigationLink linkData={pages.PHRASES} key={1}/>,
     <NavigationLink linkData={pages.VERBS} key={2}/>,
   ];
   if (isLogged) {
     baseLinks.push(<NavigationLink linkData={pages.SET_WORDS} key={3}/>);
-    baseLinks.push(<NavigationLink linkData={pages.SET_PHRASES} key={4}/>);
+    baseLinks.push(<NavigationLink linkData={pages.ADD_WORDS} key={4}/>);
     baseLinks.push(<NavigationLink linkData={pages.SET_VERBS} key={5}/>);
   }
   return baseLinks;
