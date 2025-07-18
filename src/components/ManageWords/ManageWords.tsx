@@ -36,6 +36,10 @@ export function ManageWords() {
     await addDoc(collection(db, collectionName), {
       word: draftTitle,
       translation: draftTranslate,
+      statusA: "new",
+      statusB: "new",
+      learnedAtA: null,
+      learnedAtB: null,
     });
     setDraftTitle("");
     setDraftTranslate("");
